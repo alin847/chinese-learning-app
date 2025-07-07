@@ -16,6 +16,6 @@ def get_db():
         )
         return conn
     except psycopg2.Error as e:
-        print("❌ Database connection failed:", e)
+        print("Database connection failed:", e)
         return None
     
