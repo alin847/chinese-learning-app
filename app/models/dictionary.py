@@ -1,66 +1,74 @@
 import re
 from app.db import get_db
+from app.models.sentences import get_sentences_by_ids
 from pypinyin import pinyin, Style
 
 # Optional: find a better pinyin converter and use pinyin from sql
 
-def get_search_results(field: str, query: str, limit: int = 50):
+def get_search_results(field: str, query: str, limit: int = 30):
     """
     Retrieve search results from the dictionary based on the specified field and query.
     Field must be one of 'simplified', 'pinyin_normalized', 'definitions', or 'id'.
-    Returns a list of dictionaries with 'id', 'simplified', 'pinyin', 'definitions'.
+    Returns a list of dictionaries with 'id', 'simplified', 'pinyin', 'definitions', and 'sentences'.
     """
     if field == "id":
         return [get_word_by_id(int(query))]
     else:
         sql = f"""
-            SELECT id, simplified, definitions
+            SELECT id, simplified, definitions, sentence_ids
             FROM dictionary
             WHERE {field} %% %s
             ORDER BY SIMILARITY({field}, %s) DESC
             LIMIT %s;
             """
         params = (query, query, limit)
+    
     conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute(sql, params)
     rows = cursor.fetchall()
+
+    all_sentence_ids = [sentence_id for row in rows for sentence_id in row[3]]
+    sentences = get_sentences_by_ids(all_sentence_ids)
+
     results = []
     for row in rows:
-        id, simplified, definitions = row
+        id, simplified, definitions, sentence_ids = row
         pinyin_ = ''.join(syllable[0] for syllable in pinyin(simplified, style=Style.TONE))
         word = {"id": id,
                 "simplified": simplified,
                 "pinyin": pinyin_,
-                "definitions": definitions.split("/")[1:-1]}
+                "definitions": definitions.split("/")[1:-1],
+                "sentences": [sentences[sid] for sid in sentence_ids]}
         results.append(word)
 
     cursor.close()
     conn.close()
-
     return results
 
 
 def get_word_by_id(id: int):
     """
     Retrieve a word's detail from the dictionary.
-    Returns a dictionary with 'id', 'simplified', 'pinyin', 'definitions'.
+    Returns a dictionary with 'id', 'simplified', 'pinyin', 'definitions', and 'sentences'.
     """
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT simplified, definitions FROM dictionary WHERE id = %s", (id,))
+    cursor.execute("SELECT simplified, definitions, sentence_ids FROM dictionary WHERE id = %s", (id,))
     row = cursor.fetchone()
 
     if row:
         simplified = row[0]
         pinyin_ = ''.join(syllable[0] for syllable in pinyin(simplified, style=Style.TONE))
         definitions = row[1].split("/")[1:-1]
+        sentences = get_sentences_by_ids(row[2]) if row[2] else []
         result = {"id": id, 
                   "simplified": simplified,
                   "pinyin": pinyin_,
-                  "definitions": definitions}
+                  "definitions": definitions,
+                  "sentences": [sentences[sid] for sid in row[2]]}
         cursor.close()
         conn.close()
         return result
