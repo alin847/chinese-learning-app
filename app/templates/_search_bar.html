@@ -13,9 +13,7 @@
     <!-- Search toggle -->
     <div class="lang-toggle">
         <input type="checkbox" id="lang-switch" />
-        <label for="lang-switch"></label>
-        <span class="ch">CH</span>
-        <span class="en">EN</span>
+        <label for="lang-switch" id="lang-label"></label>
     </div>
 
     <!-- Search dropdown -->
@@ -79,6 +77,18 @@ document.getElementById('search-input').addEventListener('keydown', (e) => {
         window.location.href = `/search/${type}/${encodeURIComponent(query)}`;
         }
     }
+});
+
+// Save toggle state
+window.addEventListener('DOMContentLoaded', () => {
+    const savedState = localStorage.getItem('langToggleState');
+    if (savedState !== null) {
+        langSwitch.checked = savedState === 'true';
+    }
+});
+
+langSwitch.addEventListener('change', () => {
+    localStorage.setItem('langToggleState', langSwitch.checked);
 });
 
 // Helper
