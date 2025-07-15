@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <header>
+    <a href="/home" class="logo">
+      <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+    </a>
+
+    {% include "_search_bar.html" %}
+
+    <!-- <div class="account-icon">...</div> -->
+    
+  </header>
+
+  <main>
+    <div class="search-container">
+        <nav class="search-sidebar" id="search-sidebar">
+            {% if results %}
+                {% for result in results %}
+                    <div class="search-sidebar-item" onclick="handleSidebarClick(this, '{{ result.id }}')">
+                        <h2 class="search-sidebar-item-l1">{{ result.simplified }} ({{ result.pinyin }})</h2>
+                        <p class="search-sidebar-item-l2">
+                            {% for definition in result.definitions %}
+                                <strong>{{ loop.index }}.</strong> {{ definition }}{% if not loop.last %} {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h2>No results found</h2>
+            {% endif %}
+        </nav>
+
+        <div class="search-content">
+            <!-- Search results will be displayed here */ -->
+             {% if results %}
+             <div class="search-content-header">
+             <h1>
+                <span id="search-content-word">{{ results[0].simplified }} ({{ results[0].pinyin }})</span>
+                <span class="audio-icon" id="word-audio" onclick="playAudio('{{ results[0].simplified }}')">🔊</span>
+             </h1>
+
+             <button class="add-vocab-button" id="add-vocab-button" 
+                onclick="add_remove_Vocab('{{ results[0].id }}')">
+                <span id="add-vocab-icon">
+                    {% if results[0].is_added %}
+                    ❌
+                    {% else %}
+                    ➕
+                    {% endif %}
+                </span>
+             </button>
+             </div>
+
+             <h2>Definition(s)</h2>
+             <ol class="search-content-definitions" id="search-content-definitions">
+                {% for definition in results[0].definitions %}
+                    <li>{{ definition }}</li>
+                {% endfor %}
+             </ol>
+             
+             <h2>Sentence Example(s)</h2>
+             <div id="search-content-examples-container">
+                {% if results[0].sentences %}
+                {% for s in results[0].sentences %}
+                    <div class="sentence-example">
+                        <!-- Chinese + Audio -->
+                        <div>
+                            <span>{{ s.chinese }}</span>
+                            <span class="audio-icon" onclick="playAudio('{{ s.chinese }}')">🔊</span>
+                        </div>
+                        <!-- Pinyin -->
+                        <div class="sentence-pinyin">{{ s.pinyin }}</div>
+                        <!-- English -->
+                        <div class="sentence-translation">{{ s.english }}</div>
+                    </div>
+                {% endfor %}
+                {% else %}
+                    <p>No sentence examples available. (perhaps allow gpt sentences)</p>
+                {% endif %}
+             </div>
+             {% else %}
+                <h1>No Results</h1>
+             {% endif %}
+        </div>
+    </div>
+  </main>
+
+</body>
+</html>
+
+
+<script>
+const searchResults = {{ results | tojson }};
+const user = {
+    id: "{{ current_user.id if current_user.is_authenticated else 'null' }}"
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+    if (searchResults.length > 0) {
+        // Highlight the first .search-sidebar-item
+        const firstItem = document.querySelector('.search-sidebar-item');
+        if (firstItem) {
+            firstItem.classList.add('active');
+        }
+    }
+});
+
+// Handles sidebar item clicks
+function handleSidebarClick(clickedItem, id) {
+    if (clickedItem.classList.contains('active')) return;
+
+    // Set active class
+    setActiveSidebarItem(clickedItem);
+
+    // Load the word details
+    loadWord(id);
+}
+
+function setActiveSidebarItem(clickedItem) {
+    const sidebarItems = document.querySelectorAll('.search-sidebar-item');
+    sidebarItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    clickedItem.classList.add('active');
+}
+
+function loadWord(id) {
+    // Find the word in searchResults
+    const word = searchResults.find(w => w.id == id);
+    // print word to console for debugging
+    console.log("Loading word:", word);
+    updateSearchContent(word);
+}
+
+
+function updateSearchContent(word) {
+    // Update word + pinyin + audio
+    document.getElementById("search-content-word").textContent = `${word.simplified} (${word.pinyin})`;
+    document.getElementById('word-audio').onclick = () => playAudio(word.simplified);
+
+    // Update add vocab checkbox
+    const button = document.getElementById("add-vocab-button");
+    const icon = document.getElementById("add-vocab-icon");
+    if (word.is_added) {
+        icon.textContent = '❌';
+        button.onclick = () => add_remove_Vocab(word.id);
+    } else {
+        icon.textContent = '➕';
+        button.onclick = () => add_remove_Vocab(word.id);
+    }
+
+    // Definitions list
+    const defList = document.getElementById("search-content-definitions");
+    defList.innerHTML = '';
+    word.definitions.forEach(def => {
+        const li = document.createElement('li');
+        li.textContent = def;
+        defList.appendChild(li);
+    });
+
+    // Sentence examples
+    const container = document.getElementById("search-content-examples-container");
+    container.innerHTML = '';
+
+    if (word.sentences && word.sentences.length > 0) {
+    word.sentences.forEach((s, i) => {
+        const sentenceDiv = document.createElement("div");
+        sentenceDiv.className = "sentence-example";
+
+        // Chinese + Audio
+        const cnWrapper = document.createElement("div");
+        const cnSpan = document.createElement("span");
+        cnSpan.textContent = s.chinese;
+
+        const audioBtn = document.createElement("span");
+        audioBtn.className = "audio-icon";
+        audioBtn.innerHTML = "🔊";
+        audioBtn.onclick = () => playAudio(s.chinese);
+
+        cnWrapper.appendChild(cnSpan);
+        cnWrapper.appendChild(audioBtn);
+
+        // Pinyin
+        const pinyinDiv = document.createElement("div");
+        pinyinDiv.className = "sentence-pinyin";
+        pinyinDiv.textContent = s.pinyin;
+
+        // English
+        const enDiv = document.createElement("div");
+        enDiv.className = "sentence-translation";
+        enDiv.textContent = s.english;
+
+        // Append all to sentence container
+        sentenceDiv.appendChild(cnWrapper);
+        sentenceDiv.appendChild(pinyinDiv);
+        sentenceDiv.appendChild(enDiv);
+        container.appendChild(sentenceDiv);
+    });
+    } else {
+        const noExamples = document.createElement("p");
+        noExamples.textContent = "No sentence examples available. (perhaps allow gpt sentences)";
+        container.appendChild(noExamples);
+    }
+}
+
+const audioCache = new Map();
+
+function playAudio(text) {
+  if (audioCache.has(text)) {
+    // Play cached audio
+    const cachedUrl = audioCache.get(text);
+    const audio = new Audio(cachedUrl);
+    audio.play();
+    return;
+  }
+
+  // Otherwise fetch audio and cache it
+  fetch('/tts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text })
+  })
+  .then(response => {
+    if (!response.ok) throw new Error("TTS request failed.");
+    return response.blob();
+  })
+  .then(blob => {
+    const audioUrl = URL.createObjectURL(blob);
+    audioCache.set(text, audioUrl);
+
+    const audio = new Audio(audioUrl);
+    audio.play();
+  })
+  .catch(error => {
+    console.error("Error playing audio:", error);
+    alert("Failed to play audio.");
+  });
+}
+
+
+function add_remove_Vocab(id) {
+    console.log("Toggling vocab for ID:", id);
+    const is_added = searchResults.find(w => w.id == id).is_added;
+    const icon = document.getElementById("add-vocab-icon");
+
+    if (!is_added) {
+        // Add vocab
+        fetch('/api/vocab', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, simplified_id: id})
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to add vocab.");
+            // Update the searchResults to reflect the change
+            searchResults.find(w => w.id == id).is_added = true;
+            icon.textContent = '❌'; // Change icon to indicate removal
+        })
+        .catch(error => {
+            console.error("Error adding vocab:", error);
+        });
+    } else {
+        // Remove vocab
+        if (confirm("Are you sure you want to remove this vocab? Removing it will delete all your learning progress with this word.")) {
+
+        fetch('/api/vocab', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id, simplified_id: id })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to remove vocab.");
+            // Update the searchResults to reflect the change
+            searchResults.find(w => w.id == id).is_added = false;
+            icon.textContent = '➕'; // Change icon to indicate addition
+        })
+        .catch(error => {
+            console.error("Error removing vocab:", error);
+        });
+        }
+    }
+}
+
+</script>
