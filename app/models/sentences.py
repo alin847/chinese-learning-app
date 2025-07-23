@@ -3,8 +3,9 @@ from app.db import get_db
 
 def get_sentences_by_ids(sentence_ids: list[int]) -> dict:
     """
-    Retrieve sentences by their IDs. Returns a dictionary of sentences (key=id), where each sentence
-    is represented as a dictionary with 'sentence_id', 'chinese', 'pinyin', and 'english'.
+    Retrieve sentences by their IDs. Returns a dictionary of sentences (key=sentence_id), 
+    where each sentence is represented as a dictionary with 'sentence_id', 'chinese', 
+    'pinyin', and 'english'.
     """
     if not sentence_ids:
         return {}
