@@ -3,11 +3,9 @@ from app.db import get_db
 
 def create_user(name: str, email: str, password_hash: str) -> str:
     """
-    Creates a new user in the database. Returns the user ID on success, None on failure.
+    Creates a new user in the database. Returns the user ID on success.
     """
     conn = get_db()
-    if conn is None:
-        return None
 
     try:
         with conn.cursor() as cursor:
@@ -19,9 +17,8 @@ def create_user(name: str, email: str, password_hash: str) -> str:
             conn.commit()
             return user_id
     except Exception as e:
-        print("Error creating user:", e)
         conn.rollback()
-        return None
+        raise Exception(f"Error creating user: {e}")
     finally:
         conn.close()
 
@@ -38,8 +35,6 @@ def get_user_by_id(user_id: str) -> dict:
     }
     """
     conn = get_db()
-    if conn is None:
-        return None
 
     try:
         with conn.cursor() as cursor:
@@ -54,8 +49,7 @@ def get_user_by_id(user_id: str) -> dict:
                 }
             return None
     except Exception as e:
-        print("Error retrieving user:", e)
-        return None
+        raise Exception(f"Error retrieving user: {e}")
     finally:
         conn.close()
     
@@ -72,8 +66,6 @@ def get_user_by_email(email: str) -> dict:
     }
     """
     conn = get_db()
-    if conn is None:
-        return None
 
     try:
         with conn.cursor() as cursor:
@@ -88,19 +80,16 @@ def get_user_by_email(email: str) -> dict:
                 }
             return None
     except Exception as e:
-        print("Error retrieving user:", e)
-        return None
+        raise Exception(f"Error retrieving user by email: {e}")
     finally:
         conn.close()
 
 
 def delete_user(user_id: str) -> bool:
     """
-    Deletes all of a user's data by ID. Returns True on success, False on failure.
+    Deletes all of a user's data by ID. Returns True on success.
     """
     conn = get_db()
-    if conn is None:
-        return False
 
     try:
         with conn.cursor() as cursor:
@@ -111,8 +100,7 @@ def delete_user(user_id: str) -> bool:
             conn.commit()
             return True
     except Exception as e:
-        print("Error deleting user:", e)
         conn.rollback()
-        return False
+        raise Exception(f"Error deleting user: {e}")
     finally:
         conn.close()
