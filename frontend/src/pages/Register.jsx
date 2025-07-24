@@ -135,6 +135,7 @@ function Register() {
                     <section className="login-register-section">
                         <h1>Sign Up</h1>
                         <form onSubmit={handleSubmit}>
+                            <div className="input-group">
                             <input
                                 name="name"
                                 placeholder="Full Name"
@@ -145,7 +146,9 @@ function Register() {
                             {fieldErrors.name && (
                                 <p className="form-error">{fieldErrors.name}</p>
                             )}
+                            </div>
 
+                            <div className="input-group">
                             <input
                                 name="email"
                                 placeholder="Email"
@@ -156,7 +159,9 @@ function Register() {
                             {fieldErrors.email && (
                                 <p className="form-error">{fieldErrors.email}</p>
                             )}
+                            </div>
 
+                            <div className="input-group">
                             <input
                                 type="password"
                                 name="password"
@@ -168,8 +173,8 @@ function Register() {
                             {fieldErrors.password && (
                                 <p className="form-error">{fieldErrors.password}</p>
                             )}
-
                             {error && <p className="form-error">{error}</p>}
+                            </div>
 
                             {showPasswordRules && (
                                 <div className="password-rules">

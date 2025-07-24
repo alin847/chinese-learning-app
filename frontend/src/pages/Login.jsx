@@ -95,6 +95,7 @@ function Login() {
                         <h1>Sign In</h1>
 
                         <form onSubmit={handleSubmit}>
+                            <div className="input-group">
                             <input
                                 name="email"
                                 placeholder="Email"
@@ -105,7 +106,9 @@ function Login() {
                             {fieldErrors.email && (
                                 <p className="form-error">{fieldErrors.email}</p>
                             )}
+                            </div>
 
+                            <div className="input-group">
                             <input
                                 type="password"
                                 name="password"
@@ -117,8 +120,10 @@ function Login() {
                             {fieldErrors.password && (
                                 <p className="form-error">{fieldErrors.password}</p>
                             )}
-
                             {error && <p className="form-error">{error}</p>}
+                            </div>
+                            
+                            
 
                             <button type="submit">Sign In</button>
                         </form>
