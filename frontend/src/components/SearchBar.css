@@ -81,7 +81,7 @@
     left: 3px;
     width: 21px;
     height: 23px;
-    background-image: url('../public/flag-china.svg');
+    background-image: url('/public/flag-china.svg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -92,7 +92,7 @@
 .lang-toggle input:checked + label:after {
     left: 4px;
     transform: translateX(100%); /* Move knob to the right */
-    background-image: url('../public/flag-britain.svg');
+    background-image: url('/public/flag-britain.svg');
 }
 
 
