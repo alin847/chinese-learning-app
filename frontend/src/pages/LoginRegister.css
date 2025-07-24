@@ -1,0 +1,65 @@
+
+.page-center {
+    height: calc(100vh - 120px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-register-section {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    border-radius: 1rem;
+    background-color: var(--color-white);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.login-register-section h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-error {
+    color: red;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+
+.input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+}
+.input.error {
+    border-color: red;
+}
+
+
+.password-rules {
+    margin: 0rem;
+}
+.password-rules h2 {
+    margin-bottom: 0.1rem;
+    text-align: left;
+    font-size: 1rem;
+}
+.password-rules  ul {
+    list-style-type: disc;
+    margin-left: 1.2rem;
+    margin-bottom: 0rem;
+    padding-left: 0;
+    font-size: 0.9rem;
+    text-align: left;
+}
+.password-rules li {
+    color: red;
+}
+.password-rules li.valid {
+    color: green;
+}
