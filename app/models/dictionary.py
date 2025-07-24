@@ -110,6 +110,24 @@ def get_word_by_id(simplified_id: Union[int, list]) -> Union[dict, list[dict]]:
     conn.close()
     return None
 
+def get_word_ids_by_hsk(level: int) -> list[int]:
+    """
+    Retrieve all word IDs for a given HSK level.
+    
+    Returns a list of simplified_ids for the specified HSK level.
+    """
+    conn = get_db()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT simplified_id FROM dictionary WHERE level = %s", (str(level),))
+            rows = cursor.fetchall()
+            ids = [row[0] for row in rows]
+            return ids
+    except Exception as e:
+        raise Exception(f"Error retrieving word IDs for HSK level {level}: {e}")
+    finally:
+        conn.close()
+
 
 if __name__ == "__main__":
     pass
