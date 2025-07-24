@@ -1,0 +1,62 @@
+/* Sidebar (left column) */
+.sidebar {
+  top: 0;
+  height: calc(100vh - 110px); /* Full viewport height */
+  flex: 1;
+  background-color: white;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    padding: 0rem 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+.sidebar h2::before {
+    content: '';
+    position: absolute;
+    left: 0rem;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background-color: var(--color-accent);
+    border-radius: 0 8px 8px 0;
+}
+
+.horizontal-line {
+  height: 2px;
+  background-color: rgb(20, 20, 20);
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+/* Navigation bubbles */
+.nav-bubble {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: none;  /* removes underline */
+  color: var(--color-black);
+}
+.nav-bubble:hover {
+    background: var(--color-accent-light);
+    color: white;
+    border: 1px solid black;
+
+}
+.nav-bubble.active {
+    background-color: var(--color-accent-light);
+    font-weight: 600;
+    color: white;
+    border: 2px solid black;
+}
