@@ -91,17 +91,19 @@ def get_word_by_id(simplified_id: Union[int, list]) -> Union[dict, list[dict]]:
         sentences = get_sentences_by_ids(sentence_ids)
 
         results = []
-        for row in rows:
-            id_, simplified, definitions, sentence_ids = row
+        # Ensure results are in the same order as simplified_id input
+        row_map = {row[0]: row for row in rows}
+        for id_ in simplified_id:
+            row = row_map[id_]
+            _, simplified, definitions, sentence_ids = row
             pinyin_ = ''.join(syllable[0] for syllable in pinyin(simplified, style=Style.TONE))
             result = {
-                    "simplified_id": id_,
-                    "simplified": simplified,
-                    "pinyin": pinyin_,
-                    "definitions": definitions.split("/")[1:-1],
-                    "sentences": [sentences[sid] for sid in sentence_ids]}
+                "simplified_id": id_,
+                "simplified": simplified,
+                "pinyin": pinyin_,
+                "definitions": definitions.split("/")[1:-1],
+                "sentences": [sentences[sid] for sid in sentence_ids]}
             results.append(result)
-        
         cursor.close()
         conn.close()
         return results
