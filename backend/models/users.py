@@ -10,7 +10,7 @@ def create_user(name: str, email: str, password_hash: str) -> str:
     try:
         with conn.cursor() as cursor:
             cursor.execute(
-                "INSERT INTO users (name, email, password_hash) VALUES (%s, %s) RETURNING id",
+                "INSERT INTO users (name, email, password_hash) VALUES (%s, %s, %s) RETURNING user_id",
                 (name, email, password_hash)
             )
             user_id = cursor.fetchone()[0]
@@ -38,14 +38,14 @@ def get_user_by_id(user_id: str) -> dict:
 
     try:
         with conn.cursor() as cursor:
-            cursor.execute("SELECT (name, email, password_hash) FROM users WHERE id = %s", (user_id,))
+            cursor.execute("SELECT name, email, password_hash FROM users WHERE user_id = %s", (user_id,))
             user = cursor.fetchone()
             if user:
                 return {
-                    "user_id": user[0],
-                    "name": user[1],
-                    "email": user[2],
-                    "password_hash": user[3]
+                    "user_id": user_id,
+                    "name": user[0],
+                    "email": user[1],
+                    "password_hash": user[2]
                 }
             return None
     except Exception as e:
@@ -69,7 +69,7 @@ def get_user_by_email(email: str) -> dict:
 
     try:
         with conn.cursor() as cursor:
-            cursor.execute("SELECT (user_id, name, password_hash) FROM users WHERE email = %s", (email,))
+            cursor.execute("SELECT user_id, name, password_hash FROM users WHERE email = %s", (email,))
             user = cursor.fetchone()
             if user:
                 return {
