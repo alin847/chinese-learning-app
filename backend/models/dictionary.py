@@ -67,7 +67,7 @@ def get_word_by_id(simplified_id: Union[int, list]) -> Union[dict, list[dict]]:
     conn = get_db()
     cursor = conn.cursor()
     if isinstance(simplified_id, int):
-        cursor.execute("SELECT simplified, definitions, sentence_ids FROM dictionary WHERE id = %s", (simplified_id,))
+        cursor.execute("SELECT simplified, definitions, sentence_ids FROM dictionary WHERE simplified_id = %s", (simplified_id,))
         row = cursor.fetchone()
 
         if row:

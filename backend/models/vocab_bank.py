@@ -14,15 +14,14 @@ def add_vocab(user_id: str, simplified_id: int) -> bool:
             cursor.execute(
                 """
                 INSERT INTO vocab_bank (user_id, simplified_id) 
-                VALUES (%s, %s) 
-                RETURNING id;""",
+                VALUES (%s, %s);""",
                 (user_id, simplified_id)
             )
 
             cursor.execute("""
                         UPDATE dictionary
                         SET frequency = frequency + 1
-                        WHERE id = %s;""", (simplified_id,))
+                        WHERE simplified_id = %s;""", (simplified_id,))
             conn.commit()
             return True
     except Exception as e:
@@ -128,7 +127,7 @@ def get_vocab(user_id: str, simplified_id: int) -> dict:
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
-                           SELECT (vocab_bank_id, simplified_id, repetitions, interval, ease_factor, last_reviewed, next_reviewed) FROM vocab_bank 
+                           SELECT vocab_bank_id, simplified_id, repetitions, interval, ease_factor, last_reviewed, next_review FROM vocab_bank 
                            WHERE user_id = %s AND simplified_id = %s""", 
                            (user_id, simplified_id))
             row = cursor.fetchone()
@@ -168,7 +167,7 @@ def get_all_vocab(user_id: str) -> list:
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
-                           SELECT (vocab_bank_id, simplified_id, repetitions, interval, ease_factor, last_reviewed, next_reviewed) FROM vocab_bank WHERE user_id = %s 
+                           SELECT vocab_bank_id, simplified_id, repetitions, interval, ease_factor, last_reviewed, next_review FROM vocab_bank WHERE user_id = %s 
                            ORDER BY next_review ASC
                            """, 
                            (user_id,))
@@ -202,7 +201,7 @@ def delete_vocab(user_id: str, simplified_id: int) -> bool:
             cursor.execute("""
                            UPDATE dictionary
                            SET frequency = frequency - 1
-                           WHERE id = %s;""", (simplified_id,))
+                           WHERE simplified_id = %s;""", (simplified_id,))
             
             conn.commit()
             return True

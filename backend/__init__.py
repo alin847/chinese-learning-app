@@ -42,11 +42,13 @@ def create_app():
     from .routes.vocab import bp as vocab_bp
     from .routes.placement import bp as placement_bp
     from .routes.practice import bp as practice_bp
+    from .routes.progress import bp as progress_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(search_bp)
     app.register_blueprint(tts_bp)
     app.register_blueprint(vocab_bp)
     app.register_blueprint(placement_bp)
     app.register_blueprint(practice_bp)
+    app.register_blueprint(progress_bp)
     
     return app
