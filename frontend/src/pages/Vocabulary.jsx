@@ -57,8 +57,8 @@ function Vocabulary() {
                 <h2>Add Words</h2>
                 <div className="horizontal-line"></div>
                 <div className="cards">
-                    <div className="card">
-                        <img src="https://placehold.co/150x150" onClick={() => navigate('/search/recommended')}/>
+                    <div className="card" onClick={() => navigate('/search/recommended')}>
+                        <img src="https://placehold.co/150x150"/>
                         <h3>discover new words</h3>
                     </div>
                     <div className="card" onClick={() => navigate('/search')}>
