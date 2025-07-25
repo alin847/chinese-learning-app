@@ -1,5 +1,5 @@
-from app.models.users import create_user, get_user_by_id, get_user_by_email, delete_user
-
+from backend.models.users import create_user, get_user_by_id, get_user_by_email, delete_user
+# need to fix
 def test_create_user():
     """Test creating a user."""
     email = "test@gmail.com"

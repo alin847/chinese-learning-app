@@ -1,5 +1,5 @@
-from app.models.dictionary import get_search_results, get_word_by_id
-
+from backend.models.dictionary import get_search_results, get_word_by_id
+# need to fix
 def test_get_search_results():
     # Test searching by simplified character
     results = get_search_results('simplified', '汉', limit=10)

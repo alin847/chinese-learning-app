@@ -12,7 +12,7 @@
     padding: 2rem;
     border-radius: 1rem;
     background-color: var(--color-white);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--box-shadow);
     text-align: center;
 }
 .login-register-section h1 {
