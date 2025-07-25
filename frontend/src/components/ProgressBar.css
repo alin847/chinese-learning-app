@@ -1,0 +1,41 @@
+
+.progress-bar {
+    position: relative;
+    width: 100%;
+    max-height: 25px;
+    min-height: 25px;
+    background-color: #f3f3f3;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px; /* Space between progress bar and content */
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--color-accent);
+    background-image: repeating-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.2) 0,
+        rgba(255, 255, 255, 0.2) 10px,
+        transparent 10px,
+        transparent 20px
+    );
+    width: 0;
+    transition: width 0.3s ease-in-out;
+}
+
+.progress-bar-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-weight: bold;
+  pointer-events: none; /* Optional: lets clicks pass through */
+  z-index: 2; /* Ensure it’s above the fill */
+}
