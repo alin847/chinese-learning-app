@@ -20,7 +20,6 @@ function Dashboard() {
     }
     
     if (userData) {
-      setUser(JSON.parse(userData))
       // Fetch user vocab data to see if user is new
       fetch('http://localhost:4000/api/vocab/all', {
         method: 'GET',
@@ -36,6 +35,7 @@ function Dashboard() {
         } else {
           setNewUser(false)
         }
+        setUser(JSON.parse(userData))
       })
       .catch(err => {
         console.error('Error fetching vocab data:', err)
