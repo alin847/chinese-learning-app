@@ -21,7 +21,7 @@ function Dashboard() {
     
     if (userData) {
       // Fetch user vocab data to see if user is new
-      fetch('http://localhost:4000/api/vocab/all', {
+      fetch('http://localhost:4000/api/progress/', {
         method: 'GET',
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -30,7 +30,7 @@ function Dashboard() {
       })
       .then(response => response.json())
       .then(data => {
-        if (data.learning_vocab.length === 0 && data.reviewing_vocab.length === 0 && data.mastered_vocab.length === 0) {
+        if (data.learning_count + data.reviewing_count + data.mastered_count === 0) {
           setNewUser(true)
         } else {
           setNewUser(false)
