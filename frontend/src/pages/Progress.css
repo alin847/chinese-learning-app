@@ -1,0 +1,34 @@
+
+.progress-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.progress-circle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    width: 75%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: 5px solid black;
+    background-color: var(--color-accent);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 150px;
+    padding: 20px;
+}
+.progress-circle h2 {
+    font-size: 50px;
+    margin-bottom: 10px;
+}   
+.progress-circle p {
+    font-size: 40px;
+    margin: 0;
+}   
