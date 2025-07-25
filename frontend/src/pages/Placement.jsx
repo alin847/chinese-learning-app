@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import ProgressBar from '../components/ProgressBar';
+import "./Test.css";
 import "./Placement.css";
 
 function Placement() {

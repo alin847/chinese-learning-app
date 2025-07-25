@@ -1,21 +1,4 @@
 
-.test-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100vw;
-    height: calc(100vh - 70px);
-}
-.test-container {
-    display: flex;
-    flex-direction: column;
-    padding: 30px;
-    width: 500px;
-    height: 500px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
 
 
 .placement-start {
