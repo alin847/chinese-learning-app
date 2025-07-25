@@ -44,7 +44,13 @@ function Dashboard() {
     }
   }, [navigate])
 
-
+  const handleCardClick = (path) => {
+    if (newUser) {
+      alert("You must add vocabulary words before starting.");
+    } else {
+      navigate(path);
+    }
+  };
   if (!user) {
     return <Loading />
   }
@@ -80,8 +86,8 @@ function Dashboard() {
             <h2>Recommended</h2>
             <div className="horizontal-line"></div>
             <div className="cards">
-                <div className="card">
-                    <img src="https://placehold.co/150x150" onClick={() => navigate("/practice/mixed")} />
+                <div className="card" onClick={() => handleCardClick("/practice/mixed")} >
+                    <img src="https://placehold.co/150x150"/>
                     <h3>mixed practice</h3>
                 </div>
                 <div className="card" onClick={() => navigate('/search/recommended')}>
