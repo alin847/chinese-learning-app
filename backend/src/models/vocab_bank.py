@@ -231,16 +231,14 @@ def get_random_vocab(user_id: str, limit: int = 20) -> list[dict]:
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
-                        SELECT simplified_id, frequency FROM dictionary 
+                        SELECT simplified_id, frequency
+                        FROM dictionary
                         WHERE simplified_id NOT IN %s
-                        """, (tuple(excluded_simplified_ids),))
+                        ORDER BY -LOG(random()) / frequency
+                        LIMIT %s;""", (tuple(excluded_simplified_ids), limit))
             rows = cursor.fetchall()
             simplified_ids = [row[0] for row in rows]
-            weights = np.zeros(len(simplified_ids), dtype=int)
-            for i, row in enumerate(rows):
-                weights[i] = row[1]
-            sample = np.random.choice(simplified_ids, size=limit, replace=False, p=weights/sum(weights))
-            return get_word_by_id(sample.tolist())
+            return get_word_by_id(simplified_ids)
     except Exception as e:
         raise Exception(f"Error retrieving random vocabulary words: {e}")
     finally:
