@@ -1,4 +1,4 @@
-from backend.db import get_db
+from ..db import get_db
 
 
 def get_progress(user_id: str) -> dict:

@@ -31,7 +31,7 @@ def create_app():
     # JWT token blacklist checking
     @jwt.token_in_blocklist_loader
     def check_if_token_revoked(jwt_header, jwt_payload):
-        from backend.routes.auth import blacklisted_tokens
+        from .routes.auth import blacklisted_tokens
         jti = jwt_payload['jti']
         return jti in blacklisted_tokens
 

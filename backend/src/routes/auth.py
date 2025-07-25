@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
-from backend.models.users import create_user, get_user_by_email
-from backend import bcrypt
+from ..models.users import create_user, get_user_by_email
+from .. import bcrypt
 from email_validator import validate_email, EmailNotValidError
 from datetime import timedelta
 

@@ -1,5 +1,5 @@
-from backend.models.vocab_bank import add_vocab, update_vocab, get_vocab, get_all_vocab, delete_vocab, get_random_vocab
-from backend.models.dictionary import get_word_by_id
+from ..models.vocab_bank import add_vocab, update_vocab, get_vocab, get_all_vocab, delete_vocab, get_random_vocab
+from ..models.dictionary import get_word_by_id
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
