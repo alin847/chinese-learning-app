@@ -1,8 +1,8 @@
-from ..models.test_bank import get_random_question
+from src.models.test_bank import get_random_question
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from ..models.dictionary import get_word_ids_by_hsk
-from ..models.vocab_bank import add_vocab_batch, get_random_vocab
+from src.models.dictionary import get_word_ids_by_hsk
+from src.models.vocab_bank import add_vocab_batch, get_random_vocab
 from datetime import date, timedelta
 import random
 

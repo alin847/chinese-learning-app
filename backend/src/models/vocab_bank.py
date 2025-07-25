@@ -1,5 +1,5 @@
-from ..db import get_db
-from ..models.dictionary import get_word_by_id
+from src.db import get_db
+from src.models.dictionary import get_word_by_id
 import numpy as np
 from psycopg2.extras import execute_values
 

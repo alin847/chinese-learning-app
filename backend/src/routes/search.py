@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from ..models.dictionary import get_search_results
-from ..models.vocab_bank import get_all_vocab, get_random_vocab
+from src.models.dictionary import get_search_results
+from src.models.vocab_bank import get_all_vocab, get_random_vocab
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 bp = Blueprint('search', __name__, url_prefix='/api')  

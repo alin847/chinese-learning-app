@@ -1,4 +1,4 @@
-from ..db import get_db
+from src.db import get_db
 
 def get_random_question(level: int, excluded: list) -> dict:
     """

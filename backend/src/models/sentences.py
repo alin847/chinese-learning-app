@@ -1,4 +1,4 @@
-from ..db import get_db
+from src.db import get_db
 
 
 def get_sentences_by_ids(sentence_ids: list[int]) -> dict:

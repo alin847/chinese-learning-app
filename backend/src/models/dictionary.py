@@ -1,5 +1,5 @@
-from ..db import get_db
-from ..models.sentences import get_sentences_by_ids
+from src.db import get_db
+from src.models.sentences import get_sentences_by_ids
 from pypinyin import pinyin, Style
 from typing import Union
 

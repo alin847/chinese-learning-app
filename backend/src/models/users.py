@@ -1,4 +1,4 @@
-from ..db import get_db
+from src.db import get_db
 
 
 def create_user(name: str, email: str, password_hash: str) -> str:
