@@ -29,9 +29,9 @@ function Progress() {
       .then(response => response.json())
       .then(data => {
         // Process data to get counts
-        setLearningCount(data.learning_count);
-        setReviewingCount(data.reviewing_count);
-        setMasteredCount(data.mastered_count);
+        setLearningCount(data.learning_count || 0);
+        setReviewingCount(data.reviewing_count || 0);
+        setMasteredCount(data.mastered_count || 0);
         setHoursSpentPracticing(Math.ceil(data.time_spent / 3600)); // Convert seconds to hours and ceil
         setPracticeQuestionsAnswered(data.practice_completed);
         setLoading(false);
