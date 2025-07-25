@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, Response
 from google.cloud import texttospeech
+from src import tts_client
 
 bp = Blueprint('tts', __name__, url_prefix='/api')
 
@@ -11,9 +12,6 @@ def tts():
     if not text:
         return jsonify({'error': 'No text provided for synthesis.'}), 400
     try: 
-        # Initialize the client
-        client = texttospeech.TextToSpeechClient()
-
         # Set the text input to be synthesized
         synthesis_input = texttospeech.SynthesisInput(text=text)
 
@@ -29,7 +27,7 @@ def tts():
         )
 
         # Perform the text-to-speech request
-        response = client.synthesize_speech(
+        response = tts_client.synthesize_speech(
             input=synthesis_input,
             voice=voice,
             audio_config=audio_config

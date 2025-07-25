@@ -4,8 +4,9 @@ import os
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-
-
+import base64
+from google.cloud import texttospeech
+from google.cloud import speech
 # Load variables from .env file
 load_dotenv()
 
@@ -13,6 +14,13 @@ load_dotenv()
 bcrypt = Bcrypt()
 jwt = JWTManager()
 
+# Initialize google cloud tts/stt client
+key_b64 = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_B64")
+if key_b64 and not os.path.exists("google_credentials.json"):
+    with open("google_credentials.json", "wb") as f:
+        f.write(base64.b64decode(key_b64))
+tts_client = texttospeech.TextToSpeechClient.from_service_account_json("google_credentials.json")
+stt_client = speech.SpeechClient.from_service_account_json("google_credentials.json")
 
 def create_app():
     app = Flask(__name__)

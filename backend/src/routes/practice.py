@@ -5,6 +5,7 @@ from google import genai
 from google.genai import types
 from google.cloud import texttospeech
 from google.cloud import speech
+from src import tts_client, stt_client
 import difflib
 import json
 import base64
@@ -223,8 +224,6 @@ def check_answer():
 # HELPER
 def tts(text):
     """Text-to-Speech synthesis for the given text."""
-    client = texttospeech.TextToSpeechClient()
-
     synthesis_input = texttospeech.SynthesisInput(text=text)
 
     voice = texttospeech.VoiceSelectionParams(
@@ -237,7 +236,7 @@ def tts(text):
         speaking_rate=0.9,
     )
 
-    response = client.synthesize_speech(
+    response = tts_client.synthesize_speech(
         input=synthesis_input,
         voice=voice,
         audio_config=audio_config
@@ -251,7 +250,6 @@ def stt(audio_bytes):
     Speech-to-Text transcription for the given audio bytes.
     Returns the transcribed text.
     """
-    client = speech.SpeechClient()
     audio = speech.RecognitionAudio(content=audio_bytes)
 
     config = speech.RecognitionConfig(
@@ -260,7 +258,7 @@ def stt(audio_bytes):
         enable_automatic_punctuation=True,
     )
 
-    response = client.recognize(config=config, audio=audio)
+    response = stt_client.recognize(config=config, audio=audio)
     
     # Combine all results into a single transcript
     transcript = "".join([result.alternatives[0].transcript for result in response.results])
