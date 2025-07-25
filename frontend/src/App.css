@@ -1,0 +1,136 @@
+
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* full screen */
+    background-color: #f7f7f7;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--color-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+
+/* homepage container */
+.home-container {
+    background-color: #f7f7f7;
+    display: grid;
+    grid-template-columns: 300px 1fr; /* Sidebar and content */
+    gap: 20px; /* Space between sidebar and content */
+    padding: 20px;
+    width: 100%;
+    min-height: calc(100vh - 70px); /* Subtract header height (adjust 70px as needed) */
+}
+
+
+.horizontal-line {
+  height: 2px;
+  background-color: rgb(20, 20, 20);
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+/* Content area (right column) */
+.content {
+    background-color: white;
+    flex: 1;
+    padding: 2rem;
+    height: calc(100vh - 110px); /* Match sidebar height */
+    overflow-y: auto;            /* Enable vertical scrolling */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+}
+.content h1 {
+    color: var(--color-black);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+.content h1::before {
+    content: '';
+    position: absolute;
+    left: -1rem;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    background-color: var(--color-accent);
+    border-radius: 0 8px 8px 0;
+}
+
+.subcontent {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+}
+.subcontent h2 {
+    color: var(--color-black);
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    position: relative;
+}
+.subcontent h2::before {
+    content: '';
+    position: absolute;
+    left: -1rem;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background-color: var(--color-accent);
+    border-radius: 0 8px 8px 0;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Responsive grid */
+    gap: 1rem; /* Space between cards */
+}
+.card {
+    background-color: var(--color-accent-light);
+    border-radius: 10px;
+    border: 2px solid black;
+    padding: 1.5rem;
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    transition: transform var(--transition-fast);
+    cursor: pointer;
+}
+.card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 50%;
+  padding: 10px; /* Add padding inside the circle */
+  background: white; /* Optional: background to show padding area */
+  box-sizing: border-box; /* Ensure padding doesn't overflow card */
+}
+.card h3 {
+    color: var(--color-white);
+    font-size: 1.1rem;
+}
+.card:hover {
+  transform: translateY(-8px) scale(1.03); /* More lift and slight scale */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Deeper shadow */
+  background-color: var(--color-accent);
+  transition: 
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+  z-index: 2;
+}
+
+
+
