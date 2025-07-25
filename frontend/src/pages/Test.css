@@ -72,8 +72,8 @@
     font-size: 20px;
 }
 .test-end-content img {
-    width: 50%;
-    height: auto;
+    width: 60%;
+    aspect-ratio: 1 / 1;
     margin: 20px 0;
     border-radius: 10px;
 }

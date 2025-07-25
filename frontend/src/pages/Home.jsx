@@ -14,7 +14,7 @@ function Home() {
                 <div className="container">
                     <section className="two-column">
                         <div className="image-column">
-                            <img src="/dummy.jpg" alt="Example image" />
+                            <img src="/simple_effective.jpg" alt="Example image" />
                         </div>
                         <div className="content-column">
                             <h2>simple & effective</h2>
@@ -36,13 +36,13 @@ function Home() {
                             </p>
                         </div>
                         <div className="image-column">
-                            <img src="/hero.jpg" alt="Personalized learning" />
+                            <img src="/personalized_learning.webp" alt="Personalized learning" />
                         </div>
                     </section>
 
                     <section className="two-column">
                         <div className="image-column">
-                            <img src="/dummy.jpg" alt="Example image" />
+                            <img src="/unlimited_dictation.webp" alt="Example image" />
                         </div>
                         <div className="content-column">
                             <h2>unlimited dictation exercises</h2>
@@ -73,7 +73,7 @@ function Home() {
 
                     <section className="two-column">
                         <div className="image-column">
-                            <img src="/dummy.jpg" alt="Example image" />
+                            <img src="/unlimitedspeaking.jpg" alt="Example image" />
                         </div>
                         <div className="content-column">
                             <h2>unlimited speaking exercises</h2>

@@ -71,11 +71,11 @@ function Dashboard() {
             <div className="horizontal-line"></div>
             <div className="cards">
                 <div className="card" onClick={() => navigate("/placement")}>
-                    <img src="https://placehold.co/150x150"/>
+                    <img src="/testbubble.png"/>
                     <h3>take a test to automatically setup</h3>
                 </div>
                 <div className="card" onClick={() => navigate('/search')}>
-                    <img src="https://placehold.co/150x150" />
+                    <img src="/add.png" />
                     <h3>add words to learn manually</h3>
                 </div>
             </div>
@@ -87,11 +87,11 @@ function Dashboard() {
             <div className="horizontal-line"></div>
             <div className="cards">
                 <div className="card" onClick={() => handleCardClick("/practice/mixed")} >
-                    <img src="https://placehold.co/150x150"/>
+                    <img src="/mixed.png"/>
                     <h3>mixed practice</h3>
                 </div>
                 <div className="card" onClick={() => navigate('/search/recommended')}>
-                    <img src="https://placehold.co/150x150" />
+                    <img src="/lightbulb.png" />
                     <h3>discover new words</h3>
                 </div>
             </div>

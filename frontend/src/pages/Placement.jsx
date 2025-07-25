@@ -145,7 +145,7 @@ function PlacementStart({ onStart }) {
     return (
         <div className="placement-start">
             <h1>Welcome to the Placement Test</h1>
-            <img src={`https://placehold.co/150x150`} alt={`icon`} />
+            <img src={`/testbubble.png`} alt={`icon`} />
             <button onClick={onStart}>Start Test</button>
         </div>
     );
@@ -157,7 +157,7 @@ function PlacementEnd({ hskLevel }) {
         <div className="placement-end">
             <h1>Your estimated HSK Level is: {hskLevel}</h1>
             <p>Initial vocabulary has been added to your bank.</p>
-            <img src={`https://placehold.co/150x150`} alt={`icon`} />
+            <img src={`/welldone.png`} alt={`icon`} />
             <button onClick={() => navigate("/home")}>Return to home</button>
         </div>
     );

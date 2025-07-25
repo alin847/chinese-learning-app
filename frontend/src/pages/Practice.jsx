@@ -42,23 +42,23 @@ function Practice() {
           <div className="subcontent">
             <div className="cards">
               <div className="card" onClick={() => handleCardClick('/practice/mixed')}>
-                <img src="https://placehold.co/150x150" />
+                <img src="/mixed.png" />
                 <h3>mixed practice</h3>
               </div>
               <div className="card" onClick={() => handleCardClick('/practice/dictation-sentence')}>
-                <img src="https://placehold.co/150x150" />
+                <img src="/sentdict.png" />
                 <h3>sentence dictation</h3>
               </div>
               <div className="card" onClick={() => handleCardClick('/practice/dictation-simplified')}>
-                <img src="https://placehold.co/150x150" />
+                <img src="/chardict.png" />
                 <h3>character dictation</h3>
               </div>
               <div className="card" onClick={() => handleCardClick('/practice/writing')}>
-                <img src="https://placehold.co/150x150" />
+                <img src="/writing.png" />
                 <h3>sentence writing</h3>
               </div>
               <div className="card" onClick={() => handleCardClick('/practice/speaking')}>
-                <img src="https://placehold.co/150x150" />
+                <img src="/speaking.png" />
                 <h3>speaking</h3>
               </div>
             </div>
