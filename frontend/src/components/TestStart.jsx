@@ -4,7 +4,7 @@ function TestStart({ type, onStart }) {
     return (
         <div className="test-start">
             <h1>Welcome to {mapping[type]} Practice</h1>
-            <img src={`https://placehold.co/150x150`} alt={`icon`} />
+            <img src={imgMapping[type]} alt={`icon`} />
             <button 
                 className="button-start" 
                 onClick={onStart}
@@ -25,3 +25,10 @@ const mapping = {
     "mixed": "Mixed",
 }
 
+const imgMapping = {
+    "dictation-sentence": "/sentdict.png",
+    "dictation-simplified": "/chardict.png",
+    "speaking": "/speaking.png",
+    "writing": "/writing.png",
+    "mixed": "/mixed.png",
+}

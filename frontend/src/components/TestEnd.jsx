@@ -20,7 +20,7 @@ function TestEnd({ wrongSimplified, score }) {
                     </>
                 )}
                 
-                <img src="https://placehold.co/150x150" alt="icon (some yay pic)" />
+                <img src="/welldone.png" alt="well done!" />
             </div>
 
             <button onClick={() => navigate("/home")}>Return to home</button>
