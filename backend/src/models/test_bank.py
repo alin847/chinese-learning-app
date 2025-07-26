@@ -1,4 +1,4 @@
-from src.db import get_db
+from src.db import get_conn, put_conn
 
 def get_random_question(level: int, excluded: list) -> dict:
     """
@@ -12,7 +12,7 @@ def get_random_question(level: int, excluded: list) -> dict:
     - 'answer': The correct answer to the question
     - 'options': A list of options for the question
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -40,4 +40,4 @@ def get_random_question(level: int, excluded: list) -> dict:
     except Exception as e:
         raise Exception(f"Error retrieving random question: {e}")
     finally:
-        conn.close()
+        put_conn(conn)

@@ -1,4 +1,4 @@
-from src.db import get_db
+from src.db import get_conn, put_conn
 from src.models.dictionary import get_word_by_id
 from psycopg2.extras import execute_values
 
@@ -6,7 +6,7 @@ def add_vocab(user_id: str, simplified_id: int) -> bool:
     """
     Adds a new vocabulary word (simplified_id) in the database for user_id. Returns True on success.
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -27,14 +27,14 @@ def add_vocab(user_id: str, simplified_id: int) -> bool:
         conn.rollback()
         raise Exception(f"Error adding vocabulary word: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
 
 
 def add_vocab_batch(user_id: str, simplified_ids: list, repetitions: list, intervals: list, next_review: list) -> bool:
     """
     Adds a batch of vocabulary words to the database for user_id. Returns true on success.
     """
-    conn = get_db()
+    conn = get_conn()
     
     if not (len(simplified_ids) == len(repetitions) == len(intervals) == len(next_review)):
         raise ValueError("All input lists must have the same length.")
@@ -65,7 +65,7 @@ def add_vocab_batch(user_id: str, simplified_ids: list, repetitions: list, inter
         conn.rollback()
         raise Exception(f"Error adding batch vocabulary words: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
 
 
 def update_vocab(user_id: str, vocab: dict) -> bool:
@@ -81,7 +81,7 @@ def update_vocab(user_id: str, vocab: dict) -> bool:
         }
     Returns True on success.
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -102,7 +102,7 @@ def update_vocab(user_id: str, vocab: dict) -> bool:
         conn.rollback()
         raise Exception(f"Error updating vocabulary word: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
     
 
 def get_vocab(user_id: str, simplified_id: int) -> dict:
@@ -121,7 +121,7 @@ def get_vocab(user_id: str, simplified_id: int) -> dict:
         }
     Returns None if the vocabulary word is not found.
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -142,7 +142,7 @@ def get_vocab(user_id: str, simplified_id: int) -> dict:
     except Exception as e:
         raise Exception(f"Error retrieving vocabulary word: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
     
 
 def get_all_vocab(user_id: str) -> list:
@@ -161,7 +161,7 @@ def get_all_vocab(user_id: str) -> list:
     
     Returns an empty list if no vocabulary words are found.
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -182,14 +182,14 @@ def get_all_vocab(user_id: str) -> list:
     except Exception as e:
         raise Exception(f"Error retrieving all vocabulary words: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
 
 
 def delete_vocab(user_id: str, simplified_id: int) -> bool:
     """
     Delete a vocabulary word by user ID and simplified id. Returns True on success.
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -209,7 +209,7 @@ def delete_vocab(user_id: str, simplified_id: int) -> bool:
         conn.rollback()
         raise Exception(f"Error deleting vocabulary word: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
 
 
 def get_random_vocab(user_id: str, limit: int = 20) -> list[dict]:
@@ -221,9 +221,9 @@ def get_random_vocab(user_id: str, limit: int = 20) -> list[dict]:
     - 'simplified': str,  # Simplified character
     - 'pinyin': str,  # Pinyin representation
     - 'definitions': list,  # List of definitions
-    - 'sentences': list,  # List of example sentences
+    - 'sentence_ids': list,  # List of example sentences
     """
-    conn = get_db()
+    conn = get_conn()
     
     all_vocab = get_all_vocab(user_id)
     excluded_simplified_ids = (vocab['simplified_id'] for vocab in all_vocab) if all_vocab else (-1,)
@@ -242,8 +242,7 @@ def get_random_vocab(user_id: str, limit: int = 20) -> list[dict]:
     except Exception as e:
         raise Exception(f"Error retrieving random vocabulary words: {e}")
     finally:
-        conn.close()
-
+        put_conn(conn)
 
 def get_random_practice(user_id: str, limit: int = 10) -> list[dict]:
     """
@@ -261,7 +260,7 @@ def get_random_practice(user_id: str, limit: int = 10) -> list[dict]:
         due_vocab = all_vocab[:limit]
         simplified_ids = [vocab['simplified_id'] for vocab in due_vocab]
         
-        conn = get_db()
+        conn = get_conn()
         results = []
         with conn.cursor() as cursor:
             cursor.execute("""
@@ -269,7 +268,7 @@ def get_random_practice(user_id: str, limit: int = 10) -> list[dict]:
                            FROM dictionary 
                            WHERE simplified_id = ANY(%s)""", (simplified_ids,))
             rows = cursor.fetchall()
-        conn.close()
+        put_conn(conn)
         for row in rows:
             simplified_id, simplified, definitions = row
             vocab = {

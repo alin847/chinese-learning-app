@@ -1,11 +1,11 @@
-from src.db import get_db
+from src.db import get_conn, put_conn
 
 
 def create_user(name: str, email: str, password_hash: str) -> str:
     """
     Creates a new user in the database. Returns the user ID on success.
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -20,7 +20,7 @@ def create_user(name: str, email: str, password_hash: str) -> str:
         conn.rollback()
         raise Exception(f"Error creating user: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
 
 
 def get_user_by_id(user_id: str) -> dict:
@@ -34,7 +34,7 @@ def get_user_by_id(user_id: str) -> dict:
         "password_hash": "hashed_password"
     }
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -51,7 +51,7 @@ def get_user_by_id(user_id: str) -> dict:
     except Exception as e:
         raise Exception(f"Error retrieving user: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
     
 
 def get_user_by_email(email: str) -> dict:
@@ -65,7 +65,7 @@ def get_user_by_email(email: str) -> dict:
         "password_hash": "hashed_password"
     }
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -82,14 +82,14 @@ def get_user_by_email(email: str) -> dict:
     except Exception as e:
         raise Exception(f"Error retrieving user by email: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
 
 
 def delete_user(user_id: str) -> bool:
     """
     Deletes all of a user's data by ID. Returns True on success.
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -103,4 +103,4 @@ def delete_user(user_id: str) -> bool:
         conn.rollback()
         raise Exception(f"Error deleting user: {e}")
     finally:
-        conn.close()
+        put_conn(conn)

@@ -1,4 +1,4 @@
-from src.db import get_db
+from src.db import get_conn, put_conn
 
 
 def get_progress(user_id: str) -> dict:
@@ -12,7 +12,7 @@ def get_progress(user_id: str) -> dict:
     - 'time_spent': Total time spent by the user
     - 'practice_completed': Total number of practices completed by the user
     """
-    conn = get_db()
+    conn = get_conn()
 
     try:
         with conn.cursor() as cursor:
@@ -41,7 +41,7 @@ def get_progress(user_id: str) -> dict:
     except Exception as e:
         raise Exception(f"Error retrieving user progress: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
 
     return progress
 
@@ -49,7 +49,7 @@ def add_time_spent(user_id: str, time_spent: int):
     """
     Add time spent by the user to their progress. Return True if success.
     """
-    conn = get_db()
+    conn = get_conn()
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
@@ -64,14 +64,14 @@ def add_time_spent(user_id: str, time_spent: int):
         conn.rollback()
         raise Exception(f"Error updating time spent: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
         
 
 def add_practice_completed(user_id: str):
     """
     Increment the practice completed count for the user.
     """
-    conn = get_db()
+    conn = get_conn()
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
@@ -86,5 +86,5 @@ def add_practice_completed(user_id: str):
         conn.rollback()
         raise Exception(f"Error updating practice completed: {e}")
     finally:
-        conn.close()
+        put_conn(conn)
  
