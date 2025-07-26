@@ -1,4 +1,4 @@
-from src.models.vocab_bank import add_vocab, update_vocab, get_vocab, get_all_vocab, delete_vocab, get_random_vocab
+from src.models.vocab_bank import add_vocab, update_vocab, get_vocab, get_all_vocab, delete_vocab
 from src.models.dictionary import get_word_by_id
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -108,24 +108,4 @@ def vocab_api():
         except Exception as e:
             return jsonify({'error': str(e)}), 500
         
-
-@bp.route('/vocab/random', methods=['GET'])
-@jwt_required()
-def random_vocab():
-    """
-    Get 30 new random vocabulary words for the user.
-
-    Returns a list of vocabulary words (dictionaries) with fields:
-    - simplified_id: int,  # Unique identifier for the word
-    - simplified: str,  # The simplified Chinese word
-    - pinyin: str,  # Pinyin representation of the word
-    - definitions: list,  # List of definitions for the word
-    - sentences: list  # List of example sentences using the word
-    """
-    user_id = get_jwt_identity()
-    try:
-        vocab_list = get_random_vocab(user_id, limit=30)
-        return jsonify(vocab_list), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
     
