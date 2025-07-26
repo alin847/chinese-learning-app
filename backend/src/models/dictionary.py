@@ -56,14 +56,16 @@ def get_word_by_id(simplified_id: Union[int, list]) -> Union[dict, list[dict]]:
     """
     Retrieve a word's detail from the dictionary by its simplified_id(s).
 
-    Returns a dictionary with 'simplified_id', 'simplified', 'pinyin', 'definitions', and 'sentences'.
+    Returns a dictionary with 'simplified_id', 'simplified', 'pinyin', 'definitions', and 'sentence_ids'.
     If simplified_id is a list of integers, it returns a list of dictionaries for each simplified_id.
     """
     conn = get_conn()
     cursor = conn.cursor()
-    
+
     if isinstance(simplified_id, int):
-        cursor.execute("SELECT simplified, definitions, sentence_ids FROM dictionary WHERE simplified_id = %s", (simplified_id,))
+        cursor.execute("""
+                       SELECT simplified, definitions, sentence_ids 
+                       FROM dictionary WHERE simplified_id = %s""", (simplified_id,))
         row = cursor.fetchone()
 
         if row:
@@ -80,7 +82,9 @@ def get_word_by_id(simplified_id: Union[int, list]) -> Union[dict, list[dict]]:
             put_conn(conn)
             return result
     elif isinstance(simplified_id, list):
-        cursor.execute("SELECT simplified_id, simplified, definitions, sentence_ids FROM dictionary WHERE simplified_id = ANY(%s)", (simplified_id,))
+        cursor.execute("""
+                       SELECT simplified_id, simplified, definitions, sentence_ids 
+                       FROM dictionary WHERE simplified_id = ANY(%s)""", (simplified_id,))
         rows = cursor.fetchall()
 
         results = []
@@ -104,6 +108,7 @@ def get_word_by_id(simplified_id: Union[int, list]) -> Union[dict, list[dict]]:
     cursor.close()
     put_conn(conn)
     return None
+
 
 def get_word_ids_by_hsk(level: int) -> list[int]:
     """
