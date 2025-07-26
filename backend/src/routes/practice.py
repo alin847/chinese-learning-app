@@ -11,9 +11,9 @@ import json
 import base64
 import random
 from concurrent.futures import ThreadPoolExecutor
-import time
+
 bp = Blueprint('practice', __name__, url_prefix='/api/practice')
-client = genai.Client()
+genai_client = genai.Client()
 
 @bp.route('/mixed', methods=['GET'])
 @jwt_required()
@@ -294,7 +294,7 @@ def make_dictation_sentences(simplified):
     
     for _ in range(3):
         try:
-            response = client.models.generate_content(
+            response = genai_client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=text,
                 config=types.GenerateContentConfig(
@@ -443,7 +443,7 @@ def check_writing(question, user_answer):
             Do not include any other text.
             """
     for _ in range(3):
-        response = client.models.generate_content(
+        response = genai_client.models.generate_content(
             model="gemini-2.5-flash",
             contents=text,
             config=types.GenerateContentConfig(
