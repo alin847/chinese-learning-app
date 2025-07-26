@@ -4,6 +4,7 @@ from src.models.users import create_user, get_user_by_email
 from src import bcrypt
 from email_validator import validate_email, EmailNotValidError
 from datetime import timedelta
+from src.db import get_conn, put_conn
 
 """
 API Authentication routes for JWT-based authentication
@@ -149,12 +150,19 @@ def logout():
         jti = get_jwt()['jti']
         
         # Add token to blacklist
-        blacklisted_tokens.add(jti)
+        conn = get_conn()
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO jwt_blacklist (jti) VALUES (%s) ON CONFLICT DO NOTHING",
+                (jti,)
+            )
+            conn.commit()
         
         return jsonify({'message': 'Successfully logged out'}), 200
-        
     except Exception as e:
         return jsonify({'error': 'Logout failed', 'details': str(e)}), 500
+    finally:
+        put_conn(conn)
 
 
 # HELPERS
