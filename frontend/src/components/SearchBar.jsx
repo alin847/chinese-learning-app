@@ -71,7 +71,7 @@ function SearchBar() {
 
         // Set new debounce timer
         const timer = setTimeout(() => {
-            fetchSearchResults(query);
+            fetchSearchResults(e.target.value);
         }, 100); // 100ms debounce time
 
         setDebounceTimer(timer);
