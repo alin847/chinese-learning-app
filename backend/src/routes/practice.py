@@ -10,8 +10,10 @@ import difflib
 import json
 import base64
 import random
-
+from concurrent.futures import ThreadPoolExecutor
+import time
 bp = Blueprint('practice', __name__, url_prefix='/api/practice')
+client = genai.Client()
 
 @bp.route('/mixed', methods=['GET'])
 @jwt_required()
@@ -29,6 +31,10 @@ def mixed():
 
     # 4 dictation sentences, and 1 speaking question
     sentences = make_dictation_sentences(simplified[:5])
+    audios = sentences[:4] + [word['simplified'] for word in practice_words[5:8]]
+    with ThreadPoolExecutor(max_workers=7) as executor:
+        audio_contents = list(executor.map(tts, audios))
+
     questions = []
 
     # 4 dictation sentences
@@ -38,7 +44,7 @@ def mixed():
             'simplified_id': practice_words[i]['simplified_id'],
             'simplified': practice_words[i]['simplified'],
             'sentence': sentences[i],
-            'audio': base64.b64encode(tts(sentences[i])).decode('utf-8')
+            'audio': base64.b64encode(audio_contents[i]).decode('utf-8')
         }
         questions.append(question)
 
@@ -53,13 +59,13 @@ def mixed():
         questions.append(question)
 
     # 3 dictation simplified questions
-    for word in practice_words[5:8]:
+    for i, word in enumerate(practice_words[5:8]):
         question = {
             'type': 'dictation-simplified',
             'simplified_id': word['simplified_id'],
             'simplified': word['simplified'],
             'definitions': word['definitions'],
-            'audio': base64.b64encode(tts(word["simplified"])).decode('utf-8')
+            'audio': base64.b64encode(audio_contents[i+4]).decode('utf-8')
         }
         questions.append(question)
 
@@ -95,6 +101,9 @@ def dictation_sentence():
     practice_words = get_random_practice(user_id, 10)
     simplified = [word['simplified'] for word in practice_words]
     sentences = make_dictation_sentences(simplified)
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        audio_contents = list(executor.map(tts, sentences))
+
     questions = []
     for i, sentence in enumerate(sentences):
         question = {
@@ -102,7 +111,7 @@ def dictation_sentence():
             'simplified_id': practice_words[i]['simplified_id'],
             'simplified': practice_words[i]['simplified'],
             'sentence': sentence,
-            'audio': base64.b64encode(tts(sentence)).decode('utf-8')
+            'audio': base64.b64encode(audio_contents[i]).decode('utf-8')
         }
         questions.append(question)
 
@@ -125,14 +134,18 @@ def dictation_simplified():
     """
     user_id = get_jwt_identity()
     practice_words = get_random_practice(user_id, 10)
+    simplified = [word['simplified'] for word in practice_words]
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        audio_contents = list(executor.map(tts, simplified))
+    
     questions = []
-    for word in practice_words:
+    for i, word in enumerate(practice_words):
         question = {
             'type': 'dictation-simplified',
             'simplified_id': word['simplified_id'],
             'simplified': word['simplified'],
             'definitions': word['definitions'],
-            'audio': base64.b64encode(tts(word["simplified"])).decode('utf-8')
+            'audio': base64.b64encode(audio_contents[i]).decode('utf-8')
         }
         questions.append(question)
 
@@ -279,7 +292,6 @@ def make_dictation_sentences(simplified):
             Do not include any other text.
             """
     
-    client = genai.Client()
     for _ in range(3):
         try:
             response = client.models.generate_content(
@@ -430,7 +442,6 @@ def check_writing(question, user_answer):
             [<grammar_bool>, <grammar_comment>, <meaning_bool>, <meaning_comment>]
             Do not include any other text.
             """
-    client = genai.Client()
     for _ in range(3):
         response = client.models.generate_content(
             model="gemini-2.5-flash",
