@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify
 from src.models.dictionary import get_search_results
+from src.models.sentences import get_sentences_by_ids
 from src.models.vocab_bank import get_all_vocab, get_random_vocab
 from flask_jwt_extended import jwt_required, get_jwt_identity
-
+from concurrent.futures import ThreadPoolExecutor
 bp = Blueprint('search', __name__, url_prefix='/api')  
 
 # Perhaps caching???
@@ -34,14 +35,21 @@ def search_query(search_type, query):
            "definitions": "definitions",
            "id": "simplified_id"}
     user_id = get_jwt_identity()
-
     results = get_search_results(KEY[search_type], query)
-    all_vocab = get_all_vocab(user_id)
+    sentence_ids = {sid for result in results for sid in result.get("sentence_ids", [])}
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        future1 = executor.submit(get_sentences_by_ids, list(sentence_ids))
+        future2 = executor.submit(get_all_vocab, user_id)
+        sentences = future1.result()
+        all_vocab = future2.result()
+
     # Convert all_vocab to a set for faster lookup
     all_vocab_set = {vocab["simplified_id"] for vocab in all_vocab}
 
     for result in results:
-        # Fetch is_added status
+        result["sentences"] = [sentences[sid] for sid in result.get("sentence_ids", [])]
+        del result["sentence_ids"]
         result["is_added"] = True if result["simplified_id"] in all_vocab_set else False
 
     return jsonify(results), 200
@@ -67,8 +75,13 @@ def search_recommended():
     """
     user_id = get_jwt_identity()
     results = get_random_vocab(user_id, 30)
+    sentence_ids = {sid for result in results for sid in result.get("sentence_ids", [])}
+    sentences = get_sentences_by_ids(list(sentence_ids))
+    
     for result in results:
         result["is_added"] = False
+        result["sentences"] = [sentences[sid] for sid in result.get("sentence_ids", [])]
+        del result["sentence_ids"]
     return jsonify(results), 200
 
 
@@ -102,7 +115,7 @@ def search():
     # check if only one search parameter is provided
     if sum([bool(simplified), bool(pinyin), bool(definition)]) != 1:
         return jsonify({'error': 'Please provide exactly one valid search field.'}), 400
-
+    
     try:
         if simplified:
             results = get_search_results('simplified', simplified)
@@ -110,7 +123,6 @@ def search():
             results = get_search_results('pinyin_normalized', pinyin)
         else:
             results = get_search_results('definitions', definition)
-
         return jsonify(results), 200
 
     except Exception as e:
