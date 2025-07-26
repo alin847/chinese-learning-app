@@ -7,6 +7,8 @@ from flask_cors import CORS
 import base64
 from google.cloud import texttospeech
 from google.cloud import speech
+from src.db import get_conn, put_conn
+
 # Load variables from .env file
 load_dotenv()
 
@@ -34,14 +36,23 @@ def create_app():
     jwt.init_app(app)
     
     # Configure CORS for API endpoints
-    CORS(app, supports_credentials=True)
+    CORS(app, origins=["http://localhost:5173", os.getenv('FRONTEND_URL')], supports_credentials=True)
 
     # JWT token blacklist checking
     @jwt.token_in_blocklist_loader
     def check_if_token_revoked(jwt_header, jwt_payload):
-        from .routes.auth import blacklisted_tokens
         jti = jwt_payload['jti']
-        return jti in blacklisted_tokens
+        conn = get_conn()
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "SELECT 1 FROM jwt_blacklist WHERE jti = %s",
+                    (jti,)
+                )
+                result = cursor.fetchone()
+                return result is not None  # True means it's blacklisted
+        finally:
+            put_conn(conn)
 
     # Register Blueprints
     from .routes.auth import bp as auth_bp
