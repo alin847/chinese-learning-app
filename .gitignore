@@ -10,3 +10,5 @@ venv/
 .env
 
 .DS_Store
+
+google_credentials.json
