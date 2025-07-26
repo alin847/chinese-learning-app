@@ -1,5 +1,6 @@
-from backend.models.sentences import get_sentences_by_ids
-# need to fix
+from backend.src.models.sentences import get_sentences_by_ids
+
+
 def test_get_sentences_by_ids():
     # Test 1
     sentence_ids = [61088, 61089]
