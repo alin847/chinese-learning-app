@@ -196,12 +196,15 @@ def delete_vocab(user_id: str, simplified_id: int) -> bool:
             cursor.execute("""
                            DELETE FROM vocab_bank 
                            WHERE user_id = %s AND simplified_id = %s
+                           RETURNING 1
                            """, 
                            (user_id, simplified_id))
-            cursor.execute("""
-                           UPDATE dictionary
-                           SET frequency = frequency - 1
-                           WHERE simplified_id = %s;""", (simplified_id,))
+            deleted = cursor.fetchone()
+            if deleted:
+                cursor.execute("""
+                               UPDATE dictionary
+                               SET frequency = frequency - 1
+                               WHERE simplified_id = %s;""", (simplified_id,))
             
             conn.commit()
             return True

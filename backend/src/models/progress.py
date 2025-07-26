@@ -27,9 +27,9 @@ def get_progress(user_id: str) -> dict:
 
             result = cursor.fetchone()
             progress = {
-                'learning_count': result[0],
-                'reviewing_count': result[1],
-                'mastered_count': result[2]
+                'learning_count': result[0] or 0,
+                'reviewing_count': result[1] or 0,
+                'mastered_count': result[2] or 0
             }
             cursor.execute("""
                 SELECT time_spent, practice_completed FROM users WHERE user_id = %s

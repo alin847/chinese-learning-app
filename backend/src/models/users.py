@@ -93,10 +93,10 @@ def delete_user(user_id: str) -> bool:
 
     try:
         with conn.cursor() as cursor:
-            # Delete user from the database
-            cursor.execute("DELETE FROM users WHERE user_id = %s", (user_id,))
             # Delete associated vocab_bank entries
             cursor.execute("DELETE FROM vocab_bank WHERE user_id = %s", (user_id,))
+            # Delete user from the database
+            cursor.execute("DELETE FROM users WHERE user_id = %s", (user_id,))
             conn.commit()
             return True
     except Exception as e:
