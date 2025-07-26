@@ -10,18 +10,29 @@ bp = Blueprint('vocab', __name__, url_prefix='/api')
 def vocabulary():
     """
     Retrieve all vocabulary words for the user, categorized into learning, reviewing, and mastered.
+    Each category contains a list of vocabulary words with the following fields:
+    - simplified_id: int,  # Unique identifier for the word
+    - simplified: str,  # The simplified Chinese word
+    - pinyin: str,  # Pinyin representation of the word
+    - definitions: list,  # List of definitions for the word
+    - sentences: list  # List of example sentences using the word
     """
     user_id = get_jwt_identity()
     vocab = get_all_vocab(user_id)
     simplified_ids = [v['simplified_id'] for v in vocab]
     words = get_word_by_id(simplified_ids)
 
-    # Learning vocabulary
-    learning_vocab = [words[i] for i, v in enumerate(vocab) if v['repetitions'] < 2]
-    # Reviewing vocabulary
-    reviewing_vocab = [words[i] for i, v in enumerate(vocab) if 2 <= v['repetitions'] < 4]
-    # Mastered vocabulary
-    mastered_vocab = [words[i] for i, v in enumerate(vocab) if v['repetitions'] >= 4]
+    learning_vocab = []
+    reviewing_vocab = []
+    mastered_vocab = []
+    for i, v in enumerate(vocab):
+        if v['repetitions'] < 2:
+            learning_vocab.append(words[i])
+        elif 2 <= v['repetitions'] < 4:
+            reviewing_vocab.append(words[i])
+        else:
+            mastered_vocab.append(words[i])
+
 
     return jsonify({"learning_vocab": learning_vocab,
                     "reviewing_vocab": reviewing_vocab, 

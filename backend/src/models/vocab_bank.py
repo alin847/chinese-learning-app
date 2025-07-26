@@ -1,6 +1,5 @@
 from src.db import get_db
 from src.models.dictionary import get_word_by_id
-import numpy as np
 from psycopg2.extras import execute_values
 
 def add_vocab(user_id: str, simplified_id: int) -> bool:
@@ -167,7 +166,8 @@ def get_all_vocab(user_id: str) -> list:
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
-                           SELECT vocab_bank_id, simplified_id, repetitions, interval, ease_factor, last_reviewed, next_review FROM vocab_bank WHERE user_id = %s 
+                           SELECT vocab_bank_id, simplified_id, repetitions, interval, ease_factor, last_reviewed, next_review 
+                           FROM vocab_bank WHERE user_id = %s 
                            ORDER BY next_review ASC
                            """, 
                            (user_id,))
@@ -254,15 +254,31 @@ def get_random_practice(user_id: str, limit: int = 10) -> list[dict]:
     Returns a list of dictionaries with the following fields:
     - 'simplified_id': int,  # ID of the vocabulary word
     - 'simplified': str,  # Simplified character
-    - 'pinyin': str,  # Pinyin representation
     - 'definitions': list,  # List of definitions
-    - 'sentences': list,  # List of example sentences
     """ 
     try:
         all_vocab = get_all_vocab(user_id)
         due_vocab = all_vocab[:limit]
         simplified_ids = [vocab['simplified_id'] for vocab in due_vocab]
-        return get_word_by_id(simplified_ids)
+        
+        conn = get_db()
+        results = []
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                           SELECT simplified_id, simplified, definitions 
+                           FROM dictionary 
+                           WHERE simplified_id = ANY(%s)""", (simplified_ids,))
+            rows = cursor.fetchall()
+        conn.close()
+        for row in rows:
+            simplified_id, simplified, definitions = row
+            vocab = {
+                'simplified_id': simplified_id,
+                'simplified': simplified,
+                'definitions': definitions.split("/")[1:-1]
+            }
+            results.append(vocab)
+        return results
     except Exception as e:
         raise Exception(f"Error retrieving random practice vocabulary words: {e}")
 
