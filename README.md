@@ -1,4 +1,4 @@
-# Chinese Learning App
+# Chinese Learning App (in-progress)
 
 A web application designed to help people learn Chinese more efficiently through optimized review scheduling and practice exercises.
 
@@ -7,15 +7,15 @@ A web application designed to help people learn Chinese more efficiently through
 
 ---
 
-## Features
+## Working Features
 
 ### 📚 Dictionary  
 A searchable database containing over **120,000 Chinese words**, including their pinyin, English definitions, and audio pronunciation. 
 Supports fuzzy search on Chinese character, pinyin, or English input. 
+
 ### 🔍 Recommendation System  
 Recommends Chinese words based on a combination of **word frequency** and **overall user engagement**. 
 The system boosts the visibility of words that are both commonly used in the language and frequently selected by other users.
-
 
 ### 🧠 Vocabulary Bank  
 Tracks each user's vocabulary journey on what they are learning, reviewing, and/or mastered.
@@ -23,7 +23,6 @@ Tracks each user's vocabulary journey on what they are learning, reviewing, and/
 ### ⏰ SuperMemo 2 Spaced Repetition  
 Implements the SuperMemo 2 (SM-2) algorithm to **personalize vocabulary review timing** for each user. 
 This system determines when a user should review each word to maximize long-term retention and minimize unnecessary repetition.
-
 
 ### 📝 Practice Exercises  
 Exercises designed to reinforce vocabulary memorization:
