@@ -262,11 +262,11 @@ the new repetitions, interval, and ease factor, and then sends the updated vocab
 */
 const updateVocab = async (simplified_id, score) => {
     // Fetch the vocab for the user from their vocab bank
-    const vocab = await fetchAPI_JSON(`/api/vocab?simplified_id=${simplified_id}`, { method: 'GET' });
+    const vocab = await fetchAPI_JSON(`/api/vocab/?simplified_id=${simplified_id}`, { method: 'GET' });
 
     // Update the vocab bank using the SM-2 algorithm
     const updatedVocab = SM2(score, vocab.repetitions, vocab.interval, vocab.ease_factor);
-    await fetchAPI_JSON(`/api/vocab`, {
+    await fetchAPI_JSON(`/api/vocab/`, {
         method: 'PUT',
         body: JSON.stringify({
             simplified_id: simplified_id,
