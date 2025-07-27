@@ -3,9 +3,9 @@ from src.models.dictionary import get_word_by_id
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-bp = Blueprint('vocab', __name__, url_prefix='/api')
+bp = Blueprint('vocab', __name__, url_prefix='/api/vocab')
 
-@bp.route('/vocab/all', methods=['GET'])
+@bp.route('/all', methods=['GET'])
 @jwt_required()
 def vocabulary():
     """
@@ -39,7 +39,7 @@ def vocabulary():
                     "mastered_vocab": mastered_vocab}), 200
 
 
-@bp.route('/vocab', methods=['POST', 'GET', 'PUT', 'DELETE'])
+@bp.route('/', methods=['POST', 'GET', 'PUT', 'DELETE'])
 @jwt_required()
 def vocab_api():
     """
