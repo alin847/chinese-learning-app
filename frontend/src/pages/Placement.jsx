@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import ProgressBar from '../components/ProgressBar';
+import { fetchAPI_JSON } from '../utils/api';
 import "./Test.css";
 import "./Placement.css";
 
@@ -24,7 +25,7 @@ function Placement() {
         }
     }
 
-    const handleNext = (answer) => {
+    const handleNext = async (answer) => {
         if (answer === question.answer) {
             setCorrectAnswers([...correctAnswers, level]);
             setLevel(Math.min(level + 1, 6));
@@ -39,13 +40,8 @@ function Placement() {
         }
         setCount(count + 1);
         // Fetch the next question
-        fetchQuestion({ level, excluded: excludedQuestionIds })
-            .then(data => {
-                setQuestion(data);
-            })
-            .catch(error => {
-                console.error('Error fetching question:', error);
-            });
+        const data = await fetchQuestion({ level, excluded: excludedQuestionIds })
+        setQuestion(data);
     }
 
     if (start) {
@@ -106,39 +102,18 @@ function Placement() {
 }
 
 async function fetchQuestion({ level, excluded }) {
-    const response = await fetch('http://localhost:4000/api/placement/question', {
+    const data = await fetchAPI_JSON(`/api/placement/question`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ level, excluded })
+        body: JSON.stringify({ level, excluded }),
     });
-
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-    return response.json();
+    return data;
 }
 
 async function addInitialVocab(hskLevel) {
-    try {
-        const response = await fetch('http://localhost:4000/api/placement/add-initial-vocab', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({ level: hskLevel })
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error adding initial vocabulary:', error);
-        throw error;
-    }
+    await fetchAPI_JSON(`/api/placement/add-initial-vocab`, {
+        method: 'POST',
+        body: JSON.stringify({ level: hskLevel }),
+    });
 }
 
 function PlacementStart({ onStart }) {

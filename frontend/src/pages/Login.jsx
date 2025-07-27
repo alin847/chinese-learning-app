@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
+import { fetchAPI_JSON } from '../utils/api'
 import './LoginRegister.css'
 
 function Login() {
@@ -60,17 +61,12 @@ function Login() {
         }
         
         try {
-            const response = await fetch('http://localhost:4000/api/auth/login', {
+            const data = await fetchAPI_JSON('/api/auth/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             })
 
-            const data = await response.json()
-
-            if (response.ok) {
+            if (data.user) {
                 // Store token in localStorage
                 localStorage.setItem('token', data.access_token)
                 localStorage.setItem('user', JSON.stringify(data.user))

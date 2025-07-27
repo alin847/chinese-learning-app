@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiSearch } from "react-icons/fi";
+import { fetchAPI_JSON } from '../utils/api';
 import './SearchBar.css'; // Import your CSS styles
 
 function SearchBar() {
@@ -36,16 +37,12 @@ function SearchBar() {
         }
         const cleanedQuery = cleanQuery(query);
         const queryType = getQueryType(query);
-        const url = `http://localhost:4000/api/search?${queryType}=${encodeURIComponent(cleanedQuery)}`;
+        const url = `/api/search?${queryType}=${encodeURIComponent(cleanedQuery)}`;
 
         try {
-            const response = await fetch(url, {
+            const data = await fetchAPI_JSON(url, {
                 method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
             });
-            const data = await response.json();
 
             if (data.length === 0) {
                 setShowDropdown(false);

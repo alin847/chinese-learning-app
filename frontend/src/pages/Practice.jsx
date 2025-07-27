@@ -2,26 +2,22 @@ import HeaderHome from "../components/HeaderHome";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import HomeSidebar from "../components/HomeSidebar";
+import { fetchAPI_JSON } from "../utils/api";
+import { useEffect } from "react";
 
 function Practice() {
   // Check if user is new
   const [newUser, setNewUser] = useState(false);
-  fetch('http://localhost:4000/api/progress/', {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      'Content-Type': 'application/json'
-    }
-  })
-    .then(response => response.json())
-    .then(data => {
+  useEffect(() => {
+    async function checkUserProgress() {
+      const data = await fetchAPI_JSON('/api/progress/', { method: 'GET' });
       if (data.learning_count + data.reviewing_count + data.mastered_count === 0) {
         setNewUser(true);
       }
-    })
-    .catch(err => {
-      console.error('Error fetching vocab data:', err);
-    });
+    }
+    checkUserProgress();
+  }, []);
+
 
   const navigate = useNavigate();
   const handleCardClick = (path) => {

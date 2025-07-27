@@ -1,6 +1,7 @@
 import { GiSpeaker } from "react-icons/gi";
 import { IoAddCircle, IoRemoveCircle } from "react-icons/io5";
 import { VscSearchStop } from "react-icons/vsc";
+import { fetchAPI_JSON, fetchAPI_BLOB } from "../utils/api";
 import "../pages/Search.css";
 
 function SearchContent({ active_item, setActiveItem, setSearchResults }) {
@@ -34,7 +35,7 @@ function SearchContentHeader({ active_item, setActiveItem, setSearchResults }) {
                 <span>{active_item.simplified} ({active_item.pinyin})</span>
                 <span
                     className="audio-icon"
-                    onClick={() => playAudio({ text: active_item.simplified })}
+                    onClick={() => playAudio(active_item.simplified)}
                 >
                     <GiSpeaker size={44} color="black"/>
                 </span>
@@ -83,7 +84,7 @@ function SearchContentExamples({ active_item }) {
                     <div key={idx} className="sentence-example">
                         <div className="sentence-chinese">
                             <span><strong>{sentence.chinese}</strong> ({sentence.pinyin})</span>
-                            <span className="audio-icon" onClick={() => playAudio({ text: sentence.chinese})}>
+                            <span className="audio-icon" onClick={() => playAudio(sentence.chinese)}>
                                 <GiSpeaker size={24} color="black"/>
                             </span>
                         </div>
@@ -98,100 +99,62 @@ function SearchContentExamples({ active_item }) {
     )
 };
 
-function addRemoveVocab({ item, setSearchResults, setActiveItem }) {
+async function addRemoveVocab({ item, setSearchResults, setActiveItem }) {
     const is_added = item.is_added
-    const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : null;
-    const url = `http://localhost:4000/api/vocab`;
 
     if (is_added) {
         // Remove from vocabulary
         const confirmRemove = confirm(`Are you sure you want to remove "${item.simplified}" from your vocabulary? Removing it will delete all your learning progress with this word.`);
         if (!confirmRemove) return;
-
-        fetch(url, {
+        
+        fetchAPI_JSON('/api/vocab/', {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ simplified_id: item.simplified_id })
+            body: JSON.stringify({ simplified_id: item.simplified_id }),
         })
-        .then(response => {
-            if (response.ok) {
-                setSearchResults(prev => 
-                    prev.map(i => i.simplified_id === item.simplified_id ? { ...i, is_added: false } : i)
-                );
-                setActiveItem(prev => ({
-                    ...prev,
-                    is_added: false
-                })
-                );
-            } else {
-                console.error('Failed to remove vocabulary:', response.statusText)
-            }
-        })
-        .catch(err => {
-            console.error('Error removing vocabulary:', err)
-        })
+
+        setSearchResults(prev => 
+            prev.map(i => i.simplified_id === item.simplified_id ? { ...i, is_added: false } : i)
+        );
+        setActiveItem(prev => ({
+            ...prev,
+            is_added: false
+        }));
     } else {
         // Add to vocabulary
-        fetch(url, {
+        fetchAPI_JSON('/api/vocab/', {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ simplified_id: item.simplified_id })
+            body: JSON.stringify({ simplified_id: item.simplified_id }),
         })
-        .then(response => {
-            if (response.ok) {
-                    setSearchResults(prev => 
-                        prev.map(i => i.simplified_id === item.simplified_id ? { ...i, is_added: true } : i)
-                    );
-                    setActiveItem(prev => ({
-                        ...prev,
-                        is_added: true
-                    }));
-            } else {
-                console.error('Failed to add vocabulary:', response.statusText)
-            }
-        })
-        .catch(err => {
-            console.error('Error adding vocabulary:', err)
-        })
+        
+        setSearchResults(prev => 
+            prev.map(i => i.simplified_id === item.simplified_id ? { ...i, is_added: true } : i)
+        );
+        setActiveItem(prev => ({
+            ...prev,
+            is_added: true
+        }));
     }
 };
 
 
 const audioCache = new Map();
 
-function playAudio({ text }) {
+async function playAudio(text) {
     if (audioCache.has(text)) {
         const cachedUrl = audioCache.get(text);
         const audio = new Audio(cachedUrl);
         audio.play();
         return;
     }
-
-    fetch('http://localhost:4000/api/tts', {
+    const blob = await fetchAPI_BLOB('/api/tts', {
         method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ text }),
     })
-    .then(response => response.blob())
-    .then(blob => {
-        const audioUrl = URL.createObjectURL(blob);
-        audioCache.set(text, audioUrl);
-        const audio = new Audio(audioUrl);
-        audio.play();
-    })
-    .catch(err => {
-        console.error('Error fetching audio:', err);
-    });
+
+    const audioUrl = URL.createObjectURL(blob);
+    audioCache.set(text, audioUrl);
+    const audio = new Audio(audioUrl);
+    audio.play();
 }
 
 export default SearchContent;

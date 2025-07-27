@@ -2,6 +2,7 @@ import HeaderHome from "../components/HeaderHome";
 import HomeSidebar from "../components/HomeSidebar";
 import { useState, useEffect } from "react";
 import Loading from "../components/Loading";
+import { fetchAPI_JSON } from "../utils/api";
 import './Progress.css';
 
 function Progress() {
@@ -19,27 +20,21 @@ function Progress() {
 
   useEffect(() => {
     // Fetch all vocab word for the counts
-    fetch('http://localhost:4000/api/progress/', {
-      method: 'GET',
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem('token')}`,
-        "Content-Type": "application/json"
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        // Process data to get counts
+    const fetchData = async () => {
+      try {
+        const data = await fetchAPI_JSON('/api/progress/', { method: 'GET' });
         setLearningCount(data.learning_count || 0);
         setReviewingCount(data.reviewing_count || 0);
         setMasteredCount(data.mastered_count || 0);
         setHoursSpentPracticing(Math.ceil(data.time_spent / 3600)); // Convert seconds to hours and ceil
         setPracticeQuestionsAnswered(data.practice_completed);
         setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error fetching vocab data:', err);
-      });
-
+      } catch (error) {
+        console.error('Error fetching vocabulary:', error);
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   if (loading) {

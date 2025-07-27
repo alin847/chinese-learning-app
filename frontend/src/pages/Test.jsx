@@ -7,7 +7,7 @@ import TestQuestion from '../components/TestQuestion';
 import TestAnswer from '../components/TestAnswer';
 import TestEnd from '../components/TestEnd';
 import ProgressBar from '../components/ProgressBar';
-
+import { fetchAPI_JSON } from '../utils/api';
 import "./Test.css";
 
 function Test() {
@@ -79,28 +79,24 @@ function Test() {
         const timeTaken = time; // Capture the time taken for this question
         setTime(0); // Reset time for the next question
         // update time spent for user data
-        fetch('http://localhost:4000/api/progress/time_spent', {
-            method: 'PUT',
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem('token')}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ time_spent: timeTaken })
-        })
-        .catch(err => {
+        try {
+            fetchAPI_JSON('/api/progress/time_spent', {
+                method: 'PUT',
+                body: JSON.stringify({ time_spent: timeTaken }),
+            })
+        } catch (err) {
             console.error('Error updating time spent:', err);
-        });
+        }
+
         // update number of questions answered
-        fetch('http://localhost:4000/api/progress/practice_completed', {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json'
-            },
-        })
-        .catch(err => {
+        try {
+            fetchAPI_JSON('/api/progress/practice_completed', {
+                method: 'PUT',
+            });
+        } catch (err) {
             console.error('Error updating questions answered:', err);
-        }); 
+        }
+
         // Fetch answer data from the backend
         const answerResult = await fetchAnswerData(questions[currentQuestionIndex], answer);
         setAnswerData(answerResult);
@@ -176,38 +172,20 @@ export default Test;
 
 const fetchQuestions = async (type) => {
     try {
-        const response = await fetch(`http://localhost:4000/api/practice/${type}`, {
-            method: 'GET',
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem('token')}`,
-                "Content-Type": "application/json"
-            }
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        return data; // Data is an array of questions
+        const data = await fetchAPI_JSON(`/api/practice/${type}`, { method: 'GET' });
+        return data;
     } catch (error) {
         console.error('Error fetching questions:', error);
-        return [];
+        return []; // Return an empty array if there's an error
     }
 };
 
 const fetchAnswerData = async (question, answer) => {
     try {
-        const response = await fetch(`http://localhost:4000/api/practice/check-answer`, {
+        const data = await fetchAPI_JSON(`/api/practice/check-answer`, {
             method: 'POST',
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem('token')}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ question, answer })
+            body: JSON.stringify({ question, answer }),
         });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
         return data; // Data contains the answer feedback
     } catch (error) {
         console.error('Error fetching answer data:', error);
@@ -284,32 +262,17 @@ the new repetitions, interval, and ease factor, and then sends the updated vocab
 */
 const updateVocab = async (simplified_id, score) => {
     // Fetch the vocab for the user from their vocab bank
-    const response = await fetch(`http://localhost:4000/api/vocab?simplified_id=${simplified_id}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json'
-        }
-    });
-    if (!response.ok) {
-        console.error('Failed to fetch vocab bank:', response.statusText);
-        return;
-    }
-    const vocab = await response.json();
+    const vocab = await fetchAPI_JSON(`/api/vocab?simplified_id=${simplified_id}`, { method: 'GET' });
 
     // Update the vocab bank using the SM-2 algorithm
     const updatedVocab = SM2(score, vocab.repetitions, vocab.interval, vocab.ease_factor);
-    await fetch(`http://localhost:4000/api/vocab`, {
+    await fetchAPI_JSON(`/api/vocab`, {
         method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
             simplified_id: simplified_id,
             repetitions: updatedVocab.repetitions,
             interval: updatedVocab.interval,
             ease_factor: updatedVocab.easeFactor
-        })
+        }),
     });
 };

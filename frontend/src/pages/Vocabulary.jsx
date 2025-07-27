@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import SmallCards from "../components/SmallCards";
 import Loading from "../components/Loading";
 import HomeSidebar from "../components/HomeSidebar";
+import { fetchAPI_JSON } from "../utils/api.jsx";
 
 function Vocabulary() {
     const navigate = useNavigate();
@@ -16,24 +17,14 @@ function Vocabulary() {
     useEffect(() => {
         const fetchVocabulary = async () => {
             try {
-                const response = await fetch('http://localhost:4000/api/vocab/all', {
-                    method: 'GET',
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.getItem('token')}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch vocabulary');
-                }
-                const data = await response.json();
+                const data = await fetchAPI_JSON('/api/vocab/all', { method: 'GET' });
                 setLearningWords(data.learning_vocab);
                 setReviewingWords(data.reviewing_vocab);
                 setMasteredWords(data.mastered_vocab);
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching vocabulary:', error);
-            }
+            };
         };
         fetchVocabulary();
     }, []);

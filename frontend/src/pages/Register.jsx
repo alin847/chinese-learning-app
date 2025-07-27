@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import './LoginRegister.css'
+import { fetchAPI_JSON } from '../utils/api'
 
 function Register() {
     const [formData, setFormData] = useState({
@@ -101,17 +102,12 @@ function Register() {
         }
 
         try {
-            const response = await fetch('http://localhost:4000/api/auth/register', {
+            const data = await fetchAPI_JSON('/api/auth/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             })
 
-            const data = await response.json()
-
-            if (response.ok) {
+            if (data.user) {
                 // Store token in localStorage
                 localStorage.setItem('token', data.access_token)
                 localStorage.setItem('user', JSON.stringify(data.user))

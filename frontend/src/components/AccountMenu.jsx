@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchAPI_JSON } from '../utils/api';
 import './AccountMenu.css'; // Import your CSS styles
 
 function AccountMenu() {
@@ -11,18 +12,15 @@ function AccountMenu() {
         const token = localStorage.getItem('token')
         
         try {
-        await fetch('http://localhost:4000/api/auth/logout', {
-            method: 'POST',
-            headers: {
-            'Authorization': `Bearer ${token}`
-            }
-        })
+            await fetchAPI_JSON('/api/auth/logout', {
+                method: 'POST',
+            });
         } catch (err) {
-        console.error('Logout error:', err)
+            console.error('Logout error:', err)
         } finally {
-        // Remove from localStorage regardless
-        localStorage.clear()
-        navigate('/login')
+            // Remove from localStorage regardless
+            localStorage.clear()
+            navigate('/login')
         }
     };
     // Get user data

@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
 import "./Search.css";
+import { fetchAPI_JSON } from "../utils/api";
 
 function Search() {
     const location = useLocation();
@@ -42,12 +43,12 @@ function Search() {
         } else if (routeType === 'RECOMMENDED') {
             // Fetch recommended items
             setLoading(true);
-            fetchSearchResults({ url: 'http://localhost:4000/api/search/recommended'});
+            fetchSearchResults('/api/search/recommended');
             setPlaceholder(false);
         } else if (routeType === 'SEARCH_RESULTS') {
             // Fetch search results based on params.type and params.query
             setLoading(true);
-            fetchSearchResults({ url: `http://localhost:4000/api/search/${params.type}/${params.query}`});
+            fetchSearchResults(`/api/search/${params.type}/${params.query}`);
             setPlaceholder(false);
         } else {
             console.error('Unknown route type:', routeType);
@@ -56,17 +57,11 @@ function Search() {
         }
     }, [routeType, params]);
 
-    const fetchSearchResults = async ({ url }) => {
+    const fetchSearchResults = async (url) => {
         try {
-            const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-            },
+            const data = await fetchAPI_JSON(url, {
+                method: 'GET',
             });
-
-            const data = await response.json();
 
             if (data && data.length > 0) {
             setSearchResults(data);
@@ -83,6 +78,7 @@ function Search() {
             setLoading(false);
         }
     };
+
     if (loading) {
         return <Loading />;
     }
